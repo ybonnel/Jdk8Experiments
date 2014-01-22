@@ -46,7 +46,7 @@ public class Movie {
         movie.actors = columns.subList(1, columns.size()).stream()
                 .map(actor -> {
                     String lastName = actor.split(",")[0];
-                    String firstName = actor.split(",").length > 1 ? actor.split(",")[1] : "unkown";
+                    String firstName = actor.split(",").length > 1 ? actor.split(",")[1].substring(1) : "unkown";
                     return new Actor(firstName, lastName);
                 })
                 .collect(Collectors.toSet());

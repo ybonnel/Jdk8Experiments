@@ -91,7 +91,7 @@ public class Movies {
         )).entrySet().stream().max(Map.Entry.comparingByValue())
                 .ifPresent(System.out::println));
 
-        chrono("From movies parralel", () -> movies.parallelStream().flatMap(
+        chrono("From movies parallel", () -> movies.parallelStream().flatMap(
                 movie -> movie.getActors().stream().map(actor -> new Pair<Actor, Movie>(actor, movie))
         ).collect(Collectors.groupingBy(
                 Pair<Actor, Movie>::getKey,
