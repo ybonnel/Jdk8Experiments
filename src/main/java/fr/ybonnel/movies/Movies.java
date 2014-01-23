@@ -14,45 +14,58 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.ybonnel;
+package fr.ybonnel.movies;
 
 import javafx.util.Pair;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.IntSummaryStatistics;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static fr.ybonnel.util.ChronoUtil.chrono;
+
 public class Movies {
 
-    public static void main(String[] args) throws IOException {
+    private static Set<Movie> movies;
+    private static Set<Actor> actors;
 
-        Set<Movie> movies =
-                Files.readAllLines(
-                        new File(Movies.class.getResource("/movies-mpaa.txt").getPath()).toPath())
-                        .stream()
-                        .map(Movie::fromLine)
-                        .collect(Collectors.toSet());
-
-        Set<Actor> actors = movies.stream().flatMap(movie -> movie.getActors().stream()).collect(Collectors.toSet());
+    /**
+     * Load dataset into movies and actors.
+     * http://introcs.cs.princeton.edu/java/data/movies-mpaa.txt
+     */
+    private static void loadDatas() throws IOException {
+        movies = Files.readAllLines(
+                new File(Movies.class.getResource("/movies-mpaa.txt").getPath()).toPath())
+                .stream()
+                .map(Movie::fromLine)
+                .collect(Collectors.toSet());
+        actors = movies.stream().flatMap(movie -> movie.getActors().stream()).collect(Collectors.toSet());
 
         System.out.println("Movies : " + movies.size());
         System.out.println("Actors : " + actors.size());
         IntSummaryStatistics stats = movies.stream().map(Movie::getYear)
-                .map(year -> Integer.parseInt(year))
+                .map(Integer::parseInt)
                 .collect(Collectors.summarizingInt(Integer::intValue));
 
         System.out.println("From " + stats.getMin() + " to " + stats.getMax());
+    }
 
+    public static void main(String[] args) throws IOException {
+        loadDatas();
+        actorWithMaxFilm();
+    }
 
-        // Actor with max films.
+    /**
+     * Find the actor with max movies.
+     */
+    private static void actorWithMaxFilm() {
+        // First method :
+        //  start from actors, for each actor count films and find max.
         chrono("Sequential", () -> actors.stream()
                 .collect(
                         Collectors.toMap(
@@ -67,7 +80,7 @@ public class Movies {
                 .max(Map.Entry.comparingByValue())
                 .ifPresent(System.out::println));
 
-
+        // First method with parallel.
         chrono("Parallel", () -> actors.stream().parallel()
                 .collect(
                         Collectors.toMap(
@@ -82,9 +95,13 @@ public class Movies {
                 .max(Map.Entry.comparingByValue())
                 .ifPresent(System.out::println));
 
-
+        // Second method :
+        //  start from movies,
+        //  flatmap into pairs of Actor, Movie
+        //  groupby actors
+        //  max by counting.
         chrono("From movies", () -> movies.stream().flatMap(
-                movie -> movie.getActors().stream().map(actor -> new Pair<Actor, Movie>(actor, movie))
+                movie -> movie.getActors().stream().map(actor -> new Pair<>(actor, movie))
         ).collect(Collectors.groupingBy(
                 Pair<Actor, Movie>::getKey,
                 Collectors.counting()
@@ -92,51 +109,12 @@ public class Movies {
                 .ifPresent(System.out::println));
 
         chrono("From movies parallel", () -> movies.parallelStream().flatMap(
-                movie -> movie.getActors().stream().map(actor -> new Pair<Actor, Movie>(actor, movie))
+                movie -> movie.getActors().stream().map(actor -> new Pair<>(actor, movie))
         ).collect(Collectors.groupingBy(
                 Pair<Actor, Movie>::getKey,
                 Collectors.counting()
         )).entrySet().stream().max(Map.Entry.comparingByValue())
                 .ifPresent(System.out::println));
-
-
-    }
-
-    public static void chrono(String name, Runnable runnable) {
-
-        System.out.println("Start " + name);
-
-        long startTime = System.nanoTime();
-
-        runnable.run();
-
-        long elapsedTime = System.nanoTime() - startTime;
-        System.out.println("End of " + name + ", time : " + formatTime(elapsedTime));
-    }
-
-    public static String formatTime(long timeInNanoseconds) {
-
-        long minutes = TimeUnit.NANOSECONDS.toMinutes(timeInNanoseconds);
-        long secondes = TimeUnit.NANOSECONDS.toSeconds(timeInNanoseconds) -
-                TimeUnit.MINUTES.toSeconds(minutes);
-
-        long ms = TimeUnit.NANOSECONDS.toMillis(timeInNanoseconds)
-                - TimeUnit.MINUTES.toMillis(minutes)
-                - TimeUnit.SECONDS.toMillis(secondes);
-
-        StringBuilder builder = new StringBuilder();
-
-        if (minutes > 0) {
-            builder.append(minutes);
-            builder.append(" min ");
-        }
-        if (secondes > 0) {
-            builder.append(secondes);
-            builder.append(" s ");
-        }
-        builder.append(ms);
-        builder.append(" ms");
-        return builder.toString();
     }
 
 }
