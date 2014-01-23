@@ -18,6 +18,8 @@ Main class is [Movies](https://github.com/ybonnel/Jdk8Experiments/blob/master/sr
 
 ### Find the actor who played in more movies
 
+Method : Movies.actorWithMaxMovies
+
 Result :
 ```
 Start Sequential
@@ -35,6 +37,24 @@ End of From movies parallel, time : 140 ms
 Start jdk7
 Actor{firstName='Frank', lastName='Welker'}=92
 End of jdk7, time : 135 ms
+```
+
+
+### Find the actor who played in more movies in one year
+
+Method : Movies.actorWithMaxMoviesInAYear
+
+Result :
+```
+Start jdk7
+Year : 1999, Actor : Actor{firstName='Phil', lastName='Hawn'}, Movies : 24
+End of jdk7, time : 143 ms
+Start jdk8
+Year : 1999, Actor : Actor{firstName='Phil', lastName='Hawn'}, Movies : 24
+End of jdk8, time : 233 ms
+Start jdk8 - parrallel
+Year : 1999, Actor : Actor{firstName='Phil', lastName='Hawn'}, Movies : 24
+End of jdk8 - parrallel, time : 170 ms
 ```
 
 

@@ -59,13 +59,14 @@ public class Movies {
 
     public static void main(String[] args) throws IOException {
         loadDatas();
-        actorWithMaxFilm();
+        actorWithMaxMovies();
+        actorWithMaxMoviesInAYear();
     }
 
     /**
      * Find the actor with max movies.
      */
-    private static void actorWithMaxFilm() {
+    private static void actorWithMaxMovies() {
         // First method :
         //  start from actors, for each actor count films and find max.
         chrono("Sequential", () -> actors.stream()
@@ -136,6 +137,56 @@ public class Movies {
             }
             System.out.println(new Pair<>(bestActor, max));
         });
+    }
+
+    /**
+     * Find the actor with max movies in a year.
+     */
+    private static void actorWithMaxMoviesInAYear() {
+
+        chrono("jdk7", () -> {
+            long max = 0;
+            Actor bestActor = null;
+            String bestYear = null;
+            Map<String, Map<Actor, AtomicLong>> moviesByYearAndActor = new HashMap<>();
+            for (Movie movie : movies) {
+                if (!moviesByYearAndActor.containsKey(movie.getYear())) {
+                    moviesByYearAndActor.put(movie.getYear(), new HashMap<>());
+                }
+                Map<Actor, AtomicLong> moviesByActorForCurrentYear = moviesByYearAndActor.get(movie.getYear());
+                for (Actor actor : movie.getActors()) {
+                    if (!moviesByActorForCurrentYear.containsKey(actor)) {
+                        moviesByActorForCurrentYear.put(actor, new AtomicLong(0));
+                    }
+                    long count = moviesByActorForCurrentYear.get(actor).incrementAndGet();
+                    if (count > max) {
+                        max = count;
+                        bestActor = actor;
+                        bestYear = movie.getYear();
+                    }
+                }
+            }
+            System.out.println("Year : " + bestYear + ", Actor : "+ bestActor + ", Movies : " + max);
+        });
+
+        chrono("jdk8", () -> movies.stream().flatMap(
+                movie -> movie.getActors().stream().map(actor -> new Pair<>(new Pair<>(movie.getYear(), actor), movie))
+        ).collect(Collectors.groupingBy(
+                Pair<Pair<String, Actor>, Movie>::getKey,
+                Collectors.counting()
+        )).entrySet().stream().max(Map.Entry.comparingByValue())
+                .ifPresent(pair -> System.out.println("Year : " + pair.getKey().getKey() + ", Actor : "+ pair.getKey().getValue() + ", Movies : " + pair.getValue()))
+        );
+
+        chrono("jdk8 - parrallel", () -> movies.stream().flatMap(
+                movie -> movie.getActors().stream().map(actor -> new Pair<>(new Pair<>(movie.getYear(), actor), movie))
+        ).collect(Collectors.groupingBy(
+                Pair<Pair<String, Actor>, Movie>::getKey,
+                Collectors.counting()
+        )).entrySet().stream().max(Map.Entry.comparingByValue())
+                .ifPresent(pair -> System.out.println("Year : " + pair.getKey().getKey() + ", Actor : "+ pair.getKey().getValue() + ", Movies : " + pair.getValue()))
+        );
+
     }
 
 }
