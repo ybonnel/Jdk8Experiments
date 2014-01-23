@@ -21,9 +21,11 @@ import javafx.util.Pair;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.IntSummaryStatistics;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -115,6 +117,25 @@ public class Movies {
                 Collectors.counting()
         )).entrySet().stream().max(Map.Entry.comparingByValue())
                 .ifPresent(System.out::println));
+
+        chrono("jdk7", () -> {
+            Map<Actor, AtomicLong> moviesByActor = new HashMap<>();
+            long max = 0;
+            Actor bestActor = null;
+            for (Movie movie : movies) {
+                for (Actor actor : movie.getActors()) {
+                    if (!moviesByActor.containsKey(actor)) {
+                        moviesByActor.put(actor, new AtomicLong(0));
+                    }
+                    long count = moviesByActor.get(actor).incrementAndGet();
+                    if (count > max) {
+                        max = count;
+                        bestActor = actor;
+                    }
+                }
+            }
+            System.out.println(new Pair<>(bestActor, max));
+        });
     }
 
 }

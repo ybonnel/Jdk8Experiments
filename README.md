@@ -22,16 +22,19 @@ Result :
 ```
 Start Sequential
 Actor{firstName='Frank', lastName='Welker'}=92
-End of Sequential, time : 4 min 55 s 704 ms
+End of Sequential, time : 4 min 48 s 744 ms
 Start Parallel
 Actor{firstName='Frank', lastName='Welker'}=92
-End of Parallel, time : 1 min 24 s 452 ms
+End of Parallel, time : 1 min 44 s 638 ms
 Start From movies
 Actor{firstName='Frank', lastName='Welker'}=92
-End of From movies, time : 224 ms
+End of From movies, time : 174 ms
 Start From movies parallel
 Actor{firstName='Frank', lastName='Welker'}=92
-End of From movies parallel, time : 149 ms
+End of From movies parallel, time : 140 ms
+Start jdk7
+Actor{firstName='Frank', lastName='Welker'}=92
+End of jdk7, time : 135 ms
 ```
 
 
