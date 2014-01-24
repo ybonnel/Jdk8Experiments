@@ -39,7 +39,7 @@ public class Fibonacci {
     }
 
     public static BigInteger findNthFibonacci(long n) {
-         return Stream.generate(new FibonacciGenerator()).limit(n).max(BigInteger::compareTo).get();
+         return Stream.generate(new FibonacciGenerator()).skip(n-1).findFirst().get();
     }
 
     public static BigInteger findNthFibonacciOld(long n) {

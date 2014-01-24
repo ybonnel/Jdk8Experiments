@@ -99,16 +99,14 @@ Because test a language without fibonacci test is not a real test :)
 
 The code is under package [fr.ybonnel.fibonacci](https://github.com/ybonnel/Jdk8Experiments/tree/master/src/main/java/fr/ybonnel/fibonacci)
 
-I used Stream.max to find the last element of the stream, I couldn't find a better way, anyone?
-
 ### Calculate the 1,000,000th element of fibonacci
 
 Result :
 ```
 Start Fibonacci(1_000_000) jdk8
-End of Fibonacci(1_000_000) jdk8, time : 21 s 30 ms
+End of Fibonacci(1_000_000) jdk8, time : 18 s 721 ms
 Start Fibonacci(1_000_000) jdk7
-End of Fibonacci(1_000_000) jdk7, time : 18 s 915 ms
+End of Fibonacci(1_000_000) jdk7, time : 18 s 111 ms
 ```
 
 
