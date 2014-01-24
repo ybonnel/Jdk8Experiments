@@ -20,15 +20,26 @@ import java.util.concurrent.TimeUnit;
 
 public class ChronoUtil {
     public static void chrono(String name, Runnable runnable) {
-
         System.out.println("Start " + name);
+        long time = chrono(runnable);
+        System.out.println("End of " + name + ", time : " + formatTime(time));
+    }
 
+    public static void chrono(String name, int nbIter, Runnable runnable) {
+        long time = 0;
+
+        System.out.println("Start " + name + "(" + nbIter + ")");
+        for (int index = 0; index < nbIter; index++) {
+            time += chrono(runnable);
+        }
+        System.out.println("End of " + name + ", time : " + formatTime(time));
+
+    }
+
+    private static long chrono(Runnable runnable) {
         long startTime = System.nanoTime();
-
         runnable.run();
-
-        long elapsedTime = System.nanoTime() - startTime;
-        System.out.println("End of " + name + ", time : " + formatTime(elapsedTime));
+        return System.nanoTime() - startTime;
     }
 
     public static String formatTime(long timeInNanoseconds) {
