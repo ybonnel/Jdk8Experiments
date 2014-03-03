@@ -29,9 +29,13 @@ public class SetListArray {
 
     public static void main(String[] args) {
 
+        // Create a set of 1M integers.
         Set<Integer> set = new Random().ints(1_000_000).mapToObj(Integer::new).collect(Collectors.toSet());
+        // Create a list from the set.
         List<Integer> list = new ArrayList<>(set);
+        // Create an array of Integer from the set.
         Integer[] array = set.toArray(new Integer[set.size()]);
+        // Create an array of int from the set.
         int[] primitiveArray = set.stream().mapToInt(Integer::intValue).toArray();
 
         chrono("set", 100, () -> set.stream().max(Integer::compareTo).get());

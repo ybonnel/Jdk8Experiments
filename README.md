@@ -109,4 +109,35 @@ Start Fibonacci(1_000_000) jdk7
 End of Fibonacci(1_000_000) jdk7, time : 18 s 111 ms
 ```
 
+## Differences between Set, List, Array and primitive array
 
+The objective of this test is to see performance differences between steam based on Set, List, Array and primitive array.
+
+### Test
+
+We test speed to find the max of 1M integers.
+
+### Code
+
+The code is under package [fr.ybonnel.setlistarray](https://github.com/ybonnel/Jdk8Experiments/tree/master/src/main/java/fr/ybonnel/setlistarray/SetListArray.java)
+
+### Result
+
+```
+Start set(100)
+End of set, time : 5 s 125 ms
+Start set parallel(100)
+End of set parallel, time : 1 s 652 ms
+Start list(100)
+End of list, time : 2 s 847 ms
+Start list parallel(100)
+End of list parallel, time : 887 ms
+Start array(100)
+End of array, time : 2 s 711 ms
+Start array parallel(100)
+End of array parallel, time : 873 ms
+Start primitiveArray(100)
+End of primitiveArray, time : 106 ms
+Start primitiveArray parallel(100)
+End of primitiveArray parallel, time : 52 ms
+```
