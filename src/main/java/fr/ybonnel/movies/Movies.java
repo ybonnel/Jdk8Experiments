@@ -178,7 +178,7 @@ public class Movies {
                 .ifPresent(pair -> System.out.println("Year : " + pair.getKey().getKey() + ", Actor : "+ pair.getKey().getValue() + ", Movies : " + pair.getValue()))
         );
 
-        chrono("jdk8 - parrallel", () -> movies.stream().flatMap(
+        chrono("jdk8 - parrallel", () -> movies.parallelStream().flatMap(
                 movie -> movie.getActors().stream().map(actor -> new Pair<>(new Pair<>(movie.getYear(), actor), movie))
         ).collect(Collectors.groupingBy(
                 Pair<Pair<String, Actor>, Movie>::getKey,
